@@ -120,6 +120,8 @@ function assert(c, msg) { if (!c) throw new Error(msg); }
   const newPage = async (opts = {}) => {
     const ctx = await browser.newContext({ viewport: { width: 1366, height: 900 }, ...opts });
     const page = await ctx.newPage();
+    // По умолчанию тесты работают без настоящей базы: подставляем пустой config.js
+    await page.route("**/config.js", (r) => r.fulfill({ contentType: "text/javascript", body: "window.SITE_CONFIG={SUPABASE_URL:\"\",SUPABASE_ANON_KEY:\"\",STORAGE_BUCKET:\"media\"};" }));
     page.errors = [];
     page.on("pageerror", (e) => page.errors.push(e.message));
     page.on("console", (m) => { if (m.type() === "error" && !/fonts\.g/.test(m.text())) page.errors.push(m.text()); });
