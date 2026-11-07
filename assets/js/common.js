@@ -35,7 +35,7 @@
       try {
         const url = cfg.SUPABASE_URL.replace(/\/$/, "") + "/rest/v1/site_content?id=eq.1&select=data";
         const r = await fetchWithTimeout(url, {
-          headers: { apikey: cfg.SUPABASE_ANON_KEY, Authorization: "Bearer " + cfg.SUPABASE_ANON_KEY }
+          headers: { apikey: cfg.SUPABASE_ANON_KEY }
         });
         if (r.ok) {
           const rows = await r.json();
