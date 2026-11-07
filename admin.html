@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Админ-панель · Портфолио</title>
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/fonts.css">
+  <link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+  <!-- Экран входа -->
+  <section class="auth" id="authView" hidden>
+    <form class="auth__card" id="loginForm" autocomplete="on">
+      <div class="auth__mark">ДШ</div>
+      <h1>Вход в админ-панель</h1>
+      <p class="muted">Редактирование сайта-портфолио</p>
+      <label>E-mail<input type="email" id="loginEmail" required autocomplete="username"></label>
+      <label>Пароль<input type="password" id="loginPass" required autocomplete="current-password"></label>
+      <button class="btn btn--primary" type="submit" id="loginBtn">Войти</button>
+      <button class="linkbtn" type="button" id="forgotBtn">Забыли пароль?</button>
+      <p class="auth__msg" id="loginMsg" role="alert"></p>
+    </form>
+
+    <form class="auth__card" id="recoveryForm" hidden>
+      <div class="auth__mark">ДШ</div>
+      <h1>Новый пароль</h1>
+      <label>Новый пароль (не короче 8 символов)<input type="password" id="newPass1" minlength="8" required autocomplete="new-password"></label>
+      <label>Повторите пароль<input type="password" id="newPass2" minlength="8" required autocomplete="new-password"></label>
+      <button class="btn btn--primary" type="submit">Сохранить пароль</button>
+      <p class="auth__msg" id="recoveryMsg" role="alert"></p>
+    </form>
+  </section>
+
+  <!-- Панель -->
+  <div class="app" id="appView" hidden>
+    <aside class="side" id="side">
+      <div class="side__brand"><span class="auth__mark auth__mark--sm">ДШ</span><div><b>Админ-панель</b><small id="userEmail"></small></div></div>
+      <nav class="side__nav" id="sideNav"></nav>
+      <div class="side__foot">
+        <a class="btn btn--ghost btn--block" href="./" target="_blank" rel="noopener">Открыть сайт ↗</a>
+        <button class="btn btn--ghost btn--block" id="logoutBtn" type="button">Выйти</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="iconbtn" id="sideToggle" type="button" aria-label="Меню">☰</button>
+        <div class="topbar__title"><h1 id="sectionTitle"></h1><p id="sectionHint" class="muted"></p></div>
+        <span class="save-state" id="saveState"></span>
+        <button class="btn btn--gold" id="saveBtn" type="button" disabled>Сохранить</button>
+      </header>
+      <div class="banner" id="banner" hidden></div>
+      <div class="editor" id="editor"></div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="assets/vendor/supabase.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

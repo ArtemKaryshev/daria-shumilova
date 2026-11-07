@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Дарья Александровна Шумилова, учитель начальных классов</title>
+  <meta name="description" content="Портфолио Дарьи Александровны Шумиловой, учителя начальных классов из Санкт-Петербурга: опыт работы с детьми, достижения, грамоты и контакты.">
+  <meta property="og:type" content="profile">
+  <meta property="og:title" content="Дарья Александровна Шумилова, учитель начальных классов">
+  <meta property="og:description" content="Опыт работы с детьми, достижения, грамоты и контакты.">
+  <meta name="theme-color" content="#1E2B44">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/fonts.css">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Перейти к содержимому</a>
+
+  <header class="nav" id="nav">
+    <div class="container nav__inner">
+      <a href="#top" class="brand" aria-label="На главную">
+        <span class="brand__mark">ДШ</span>
+        <span class="brand__text"><b id="brandName">Д. А. Шумилова</b><small data-bind="hero.role">Учитель начальных классов</small></span>
+      </a>
+      <nav class="nav__links" id="navLinks" aria-label="Разделы"></nav>
+      <a href="#contacts" class="btn btn--small btn--ink nav__cta">Связаться</a>
+      <button class="nav__burger" id="burger" aria-label="Открыть меню" aria-expanded="false"></button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Шапка -->
+    <section class="hero" id="top">
+      <div class="container hero__grid">
+        <div class="hero__text reveal">
+          <p class="hero__role"><span id="heroRole"></span><span class="hero__city" id="heroEyebrow"></span></p>
+          <h1 class="hero__title" id="heroName"></h1>
+          <p class="hero__lead" id="heroTagline"></p>
+          <p class="status" id="heroStatus"><span class="status__dot"></span><span></span></p>
+          <div class="hero__actions">
+            <a href="#contacts" class="btn btn--primary" id="ctaPrimary"></a>
+            <a href="#achievements" class="btn btn--outline" id="ctaSecondary"></a>
+          </div>
+          <ul class="hero__tags" id="heroBadges"></ul>
+        </div>
+        <div class="hero__visual reveal" style="--d:.1s">
+          <div class="portrait-wrap">
+            <span class="portrait-dot portrait-dot--pink" aria-hidden="true"></span>
+            <span class="portrait-dot portrait-dot--sand" aria-hidden="true"></span>
+            <div class="portrait" id="portrait"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="header-cards" id="headerCards"></div>
+      </div>
+    </section>
+
+    <!-- Цифры -->
+    <section class="stats-band" id="statsBand">
+      <div class="container stats" id="stats"></div>
+    </section>
+
+    <!-- Обо мне -->
+    <section class="section" id="about">
+      <div class="container about">
+        <div class="about__main reveal">
+          <h2 class="section__title" id="aboutTitle"></h2>
+          <div class="about__text" id="aboutText"></div>
+          <blockquote class="quote" id="aboutQuote"></blockquote>
+        </div>
+        <aside class="why reveal" style="--d:.1s">
+          <h3 id="whyTitle"></h3>
+          <ul id="whyList"></ul>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Достижения -->
+    <section class="section section--sky" id="achievements">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2 class="section__title">Достижения и грамоты</h2>
+          <p class="section__sub">Конкурсы, экспертные оценки, профессиональные мероприятия и спорт</p>
+        </div>
+        <div class="filters reveal" id="filters" role="tablist" aria-label="Фильтр достижений"></div>
+        <div class="ach-grid" id="achGrid"></div>
+      </div>
+    </section>
+
+    <!-- Опыт -->
+    <section class="section" id="experience">
+      <div class="container exp">
+        <div class="section__head section__head--side reveal">
+          <h2 class="section__title">Преподавательская деятельность</h2>
+          <p class="section__sub">Опыт работы с детьми: центр подготовки к школе, практика в школе и детские лагеря</p>
+        </div>
+        <ol class="timeline" id="timeline"></ol>
+      </div>
+    </section>
+
+    <!-- Образование -->
+    <section class="section section--sand" id="education">
+      <div class="container edu-wrap">
+        <div class="section__head section__head--side reveal">
+          <h2 class="section__title">Образование</h2>
+        </div>
+        <div class="edu" id="edu"></div>
+      </div>
+    </section>
+
+    <!-- Подход -->
+    <section class="section" id="approach">
+      <div class="container">
+        <div class="section__head reveal">
+          <h2 class="section__title">Мой подход к работе</h2>
+          <p class="section__sub">Профессиональные компетенции и личные качества</p>
+        </div>
+        <div class="comp-grid" id="compGrid"></div>
+        <div class="qualities" id="qualities"></div>
+      </div>
+    </section>
+
+    <!-- Галерея -->
+    <section class="section section--pink" id="gallery" hidden>
+      <div class="container">
+        <div class="section__head reveal">
+          <h2 class="section__title">Моменты с занятий</h2>
+        </div>
+        <div class="gallery" id="galleryGrid"></div>
+      </div>
+    </section>
+
+    <!-- Контакты -->
+    <section class="section contact" id="contacts">
+      <div class="container contact__card reveal">
+        <div class="contact__left">
+          <h2 class="section__title">Давайте познакомимся</h2>
+          <p class="contact__note" id="contactNote"></p>
+          <div class="contact__list" id="contactList"></div>
+        </div>
+        <div class="contact__right">
+          <h3>Готовность к работе</h3>
+          <dl class="extra" id="extraList"></dl>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span id="footerName">Шумилова Дарья Александровна</span>
+      <span>© <span id="year"></span>, портфолио педагога</span>
+    </div>
+  </footer>
+
+  <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Просмотр изображения">
+    <button class="lightbox__close" id="lbClose" aria-label="Закрыть"></button>
+    <figure><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="config.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/site.js"></script>
+</body>
+</html>
