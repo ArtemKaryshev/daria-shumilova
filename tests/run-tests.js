@@ -464,6 +464,60 @@ function assert(c, msg) { if (!c) throw new Error(msg); }
     await site.context().close(); await page.context().close();
   });
 
+  await test("цвета блоков: раздел, цитата, карточка справа, карточка шапки; текст остаётся читаемым", async () => {
+    const db = { data: null, reads: 0, saves: 0, uploads: [] };
+    const page = await newPage();
+    await withMock(page, db);
+    await page.goto(BASE + "admin.html", { waitUntil: "networkidle" });
+    await page.fill("#loginEmail", "admin@test.ru"); await page.fill("#loginPass", "correct-pass");
+    await page.click("#loginBtn");
+    await page.waitForSelector("#appView:not([hidden])");
+    // Карточка «Грамоты» в шапке: синий
+    await page.locator(".field", { hasText: "Грамоты: цвет" }).locator('.tone[data-v="blue"]').click();
+    // Обо мне: сам блок тёмно-синий, цитата голубая, карточка справа розовая
+    await page.click('#sideNav [data-s="about"]');
+    await page.locator(".panel--tone .tone[data-v=\"ink\"]").click();
+    await page.locator(".field", { hasText: "Цвет цитаты" }).locator('.tone[data-v="sky"]').click();
+    await page.locator(".field", { hasText: "Цвет карточки справа" }).locator('.tone[data-v="rose"]').click();
+    assert(/Тёмно-синий/.test(await page.textContent(".panel--tone .tones__name")), "название цвета не обновилось");
+    // Достижения: тёмный блок, карточки внутри остаются светлыми
+    await page.click('#sideNav [data-s="layout"]');
+    await page.locator("#editor .item .item__head", { hasText: "Достижения" }).click();
+    await page.locator("#editor .item.is-open").locator('.tone[data-v="blue"]').click();
+    await page.click("#saveBtn");
+    await page.waitForFunction(() => /сохранены/.test(document.querySelector("#saveState").textContent));
+    const about = db.data.layout.find((x) => x.block === "about");
+    assert(about.bg === "ink" && db.data.about.quote_bg === "sky" && db.data.about.why_bg === "rose" && db.data.header_cards.awards_bg === "blue", "цвета не сохранились");
+
+    const site = await newPage();
+    await withMock(site, db);
+    await site.goto(BASE, { waitUntil: "networkidle" });
+    const info = await site.evaluate(() => {
+      const css = (el, p) => getComputedStyle(el)[p];
+      const lum = (c) => { const m = c.match(/\d+(\.\d+)?/g).map(Number); return (0.2126 * m[0] + 0.7152 * m[1] + 0.0722 * m[2]) / 255; };
+      const ach = document.querySelector("#achievements"), card = document.querySelector(".ach");
+      return {
+        aboutTone: document.querySelector("#about").dataset.tone,
+        aboutBg: lum(css(document.querySelector("#about"), "backgroundColor")),
+        aboutTitle: lum(css(document.querySelector("#aboutTitle"), "color")),
+        quote: document.querySelector("#aboutQuote").dataset.tone,
+        quoteText: lum(css(document.querySelector("#aboutQuote"), "color")),
+        why: document.querySelector(".why").dataset.tone,
+        whyTitle: lum(css(document.querySelector("#whyTitle"), "color")),
+        awards: document.querySelector(".hcard--awards").dataset.tone,
+        awardsTitle: lum(css(document.querySelector(".hcard--awards h3"), "color")),
+        achTone: ach.dataset.tone, achBg: lum(css(ach, "backgroundColor")),
+        cardTitle: lum(css(card.querySelector("h3"), "color")), cardBg: lum(css(card, "backgroundColor"))
+      };
+    });
+    assert(info.aboutTone === "ink" && info.aboutBg < 0.2 && info.aboutTitle > 0.9, "тёмный блок «Обо мне»: " + JSON.stringify(info));
+    assert(info.quote === "sky" && info.quoteText < 0.3, "цитата должна быть голубой с тёмным текстом");
+    assert(info.why === "rose" && info.whyTitle < 0.3, "карточка справа должна быть розовой с тёмным текстом");
+    assert(info.awards === "blue" && info.awardsTitle > 0.9, "карточка «Грамоты» синяя со светлым заголовком");
+    assert(info.achTone === "blue" && info.achBg < 0.4 && info.cardBg > 0.9 && info.cardTitle < 0.3, "светлые карточки в тёмном блоке должны остаться читаемыми");
+    await site.context().close(); await page.context().close();
+  });
+
   console.log("\nАдмин-панель на телефоне");
   await test("меню разделов открывается на мобильном", async () => {
     const page = await newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });

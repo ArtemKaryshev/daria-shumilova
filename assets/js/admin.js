@@ -1,6 +1,6 @@
 /* Админ-панель: вход через Supabase Auth, редактирование содержимого, загрузка изображений */
 (function () {
-  const { cfg, esc, isConfigured, loadDefault, CATEGORIES, frameStyle, normPos, BLOCKS, getLayout } = window.Common;
+  const { cfg, esc, isConfigured, loadDefault, CATEGORIES, frameStyle, normPos, BLOCKS, getLayout, TONES } = window.Common;
   const $ = (s, r = document) => r.querySelector(s);
   const clone = (o) => JSON.parse(JSON.stringify(o));
   const DEMO = !isConfigured();
@@ -16,6 +16,8 @@
   const T = (key, label, extra = {}) => ({ key, label, type: "text", ...extra });
   const TA = (key, label, extra = {}) => ({ key, label, type: "textarea", ...extra });
 
+  const TONE = (key, label, def, extra = {}) => ({ key, label, type: "tone", def, wide: true, ...extra });
+  const blockTone = (id) => (BLOCKS.find((b) => b.id === id) || {}).tone;
   const MORE = (fields) => ({ type: "more", label: "Дополнительно", wide: true, fields });
   const BLOCK_EDIT = { stats: "stats", about: "about", achievements: "achievements", experience: "experience", education: "education", approach: "competencies", gallery: "gallery", contacts: "contacts" };
   const blockTitle = (x) => x.block === "custom" ? (x.title || "Свой блок") : ((BLOCKS.find((b) => b.id === x.block) || {}).title || x.block);
@@ -26,14 +28,15 @@
         T("name", "Имя"), T("role", "Должность"),
         TA("tagline", "Коротко о себе", { wide: true }),
         { key: "photo", label: "Фото", type: "image", wide: true, crop: { shape: "circle", ratio: 1 } },
+        TONE("panel_bg", "Цвет подложки за фото", "sky"),
         T("status", "Статус", { wide: true, hint: "Зелёная строка под текстом. Пусто: не показывать" }),
         { key: "badges", label: "Плашки под кнопками", type: "list", wide: true },
         MORE([T("eyebrow", "Город"), T("short_name", "Имя в меню"), T("full_name", "Полное ФИО"), T("cta_primary", "Главная кнопка"), T("cta_secondary", "Вторая кнопка")])
       ]},
       { key: "header_cards", title: "Три карточки под шапкой", fields: [
-        T("awards_title", "Грамоты: заголовок"), TA("awards_text", "Грамоты: текст"),
-        T("teaching_title", "Деятельность: заголовок"), TA("teaching_text", "Деятельность: текст"),
-        T("contact_title", "Контакты: заголовок"), TA("contact_text", "Контакты: текст")
+        T("awards_title", "Грамоты: заголовок"), TA("awards_text", "Грамоты: текст"), TONE("awards_bg", "Грамоты: цвет", "pink"),
+        T("teaching_title", "Деятельность: заголовок"), TA("teaching_text", "Деятельность: текст"), TONE("teaching_bg", "Деятельность: цвет", "sand"),
+        T("contact_title", "Контакты: заголовок"), TA("contact_text", "Контакты: текст"), TONE("contact_bg", "Контакты: цвет", "ink")
       ]}
     ]},
     { group: "Страница", id: "layout", title: "Блоки страницы", hint: "Порядок блоков, скрытие, удаление и новые блоки", kind: "array", addLabel: "Новый блок",
@@ -47,15 +50,16 @@
         { key: "paragraphs", label: "Текст", type: "list", multiline: true, wide: true, addText: "+ Абзац" },
         { key: "points", label: "Пункты списка", type: "list", wide: true },
         { key: "image", label: "Фото", type: "image", wide: true, crop: { shape: "rect", ratio: 4 / 3 } },
+        TONE("bg", "Цвет блока", "cream"),
         { key: "hidden", label: "Скрыть на сайте", type: "checkbox" },
         MORE([
           T("subtitle", "Подзаголовок", { wide: true }),
-          { key: "bg", label: "Фон", type: "select", options: [["cream", "Кремовый"], ["sky", "Голубой"], ["pink", "Розовый"], ["sand", "Бежевый"], ["ink", "Тёмно-синий"]] },
           { key: "image_side", label: "Фото", type: "select", options: [["right", "Справа"], ["left", "Слева"]] },
           T("link", "Кнопка: ссылка", { placeholder: "https://…" }), T("link_label", "Кнопка: текст"),
           T("menu", "Пункт в верхнем меню", { wide: true, hint: "Пусто: не показывать в меню" })
         ])
       ] : [
+        TONE("bg", "Цвет блока", blockTone(x.block)),
         { key: "hidden", label: "Скрыть на сайте", type: "checkbox" },
         T("menu", "Пункт в верхнем меню", { hint: "Пусто: не показывать в меню" }),
         { type: "goto", label: "Изменить содержимое", to: (o) => BLOCK_EDIT[o.block], wide: true }
@@ -82,8 +86,10 @@
       T("title", "Заголовок", { wide: true }),
       { key: "paragraphs", label: "Текст", type: "list", multiline: true, wide: true, addText: "+ Абзац" },
       TA("quote", "Цитата", { wide: true }),
+      TONE("quote_bg", "Цвет цитаты", "rose"),
       T("why_title", "Заголовок справа", { wide: true }),
-      { key: "why", label: "Пункты справа", type: "list", wide: true }
+      { key: "why", label: "Пункты справа", type: "list", wide: true },
+      TONE("why_bg", "Цвет карточки справа", "sky")
     ]},
     { group: "Содержимое", id: "experience", title: "Опыт работы", kind: "array", addLabel: "Добавить место работы", addTop: true,
       template: { title: "", place: "", period: "", bullets: [] }, itemTitle: (x) => x.title, itemSub: (x) => [x.place, x.period].filter(Boolean).join(" · "),
@@ -96,7 +102,8 @@
       template: { title: "", icon: "spark", items: [] }, itemTitle: (x) => x.title, itemSub: (x) => (x.items || []).length + " пунктов",
       fields: [T("title", "Название"),
         { key: "icon", label: "Иконка", type: "select", options: [["book", "Книга"], ["heart", "Сердце"], ["spark", "Звёздочка"], ["users", "Дети"], ["school", "Шапочка"], ["award", "Награда"], ["flower", "Цветок"]] },
-        { key: "items", label: "Пункты", type: "list", wide: true }] },
+        { key: "items", label: "Пункты", type: "list", wide: true },
+        TONE("bg", "Цвет карточки")] },
     { group: "Содержимое", id: "qualities", title: "Подход: качества", kind: "array", addLabel: "Добавить качество",
       template: { title: "", text: "" }, itemTitle: (x) => x.title, itemSub: (x) => x.text,
       fields: [T("title", "Качество", { wide: true }), TA("text", "Пояснение", { wide: true })] },
@@ -106,7 +113,8 @@
     { group: "Содержимое", id: "contacts", title: "Контакты", hint: "Пустые поля на сайте не показываются", kind: "object", fields: [
       T("telegram", "Telegram", { placeholder: "@username" }), T("email", "E-mail", { placeholder: "name@mail.ru" }),
       T("vk", "ВКонтакте", { placeholder: "vk.com/username" }), T("max", "MAX"),
-      T("city", "Город"), TA("note", "Текст в блоке", { wide: true })
+      T("city", "Город"), TA("note", "Текст в блоке", { wide: true }),
+      TONE("card_bg", "Цвет карточки контактов", "ink")
     ]},
     { group: "Содержимое", id: "extra", title: "Готовность к работе", kind: "array", addLabel: "Добавить строку",
       template: { label: "", value: "" }, itemTitle: (x) => x.label, itemSub: (x) => x.value,
@@ -311,6 +319,22 @@
       });
       return n;
     }
+    if (f.type === "tone") {
+      const n = el(`<div class="field${wide}"><label>${esc(f.label)}</label><div class="tones" role="radiogroup" aria-label="${esc(f.label)}"></div>${hint}</div>`);
+      const box = n.querySelector(".tones");
+      const draw = () => {
+        const cur = obj[f.key] || f.def || "";
+        const name = (TONES.find((t) => t.id === cur) || {}).name || "Стандартный";
+        box.innerHTML = TONES.map((t) => `<button type="button" class="tone${t.id === cur ? " is-on" : ""}" data-v="${t.id}" role="radio" aria-checked="${t.id === cur}" title="${esc(t.name)}" aria-label="${esc(t.name)}" style="--c:${t.hex}"></button>`).join("")
+          + `<span class="tones__name">${esc(name)}</span>`;
+      };
+      draw();
+      box.addEventListener("click", (e) => {
+        const b = e.target.closest("[data-v]"); if (!b) return;
+        obj[f.key] = b.dataset.v; draw(); onChange(f.key);
+      });
+      return n;
+    }
     if (f.type === "more") {
       const n = el(`<details class="more field--wide"><summary>${esc(f.label)}</summary></details>`);
       n.appendChild(fieldsGrid(f.fields, obj, onChange));
@@ -374,6 +398,14 @@
     $("#sectionHint").textContent = s.hint || "";
     const ed = $("#editor"); ed.innerHTML = "";
     const changed = () => { markDirty(); };
+
+    const blockId = Object.keys(BLOCK_EDIT).find((k) => BLOCK_EDIT[k] === s.id);
+    const entry = blockId && Array.isArray(content.layout) && content.layout.find((x) => x.block === blockId);
+    if (entry) {
+      const p = el(`<div class="panel panel--tone"></div>`);
+      p.appendChild(fieldsGrid([TONE("bg", "Цвет блока на странице", blockTone(blockId))], entry, changed));
+      ed.appendChild(p);
+    }
 
     if (s.kind === "object") {
       const obj = ensure(content, s.id, {});

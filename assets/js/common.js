@@ -105,17 +105,30 @@
 
   // Стандартные блоки страницы (шапка с фото всегда сверху и сюда не входит)
   const BLOCKS = [
-    { id: "stats", dom: "statsBand", title: "Цифры", menu: "" },
-    { id: "about", dom: "about", title: "Обо мне", menu: "Обо мне" },
-    { id: "achievements", dom: "achievements", title: "Достижения и грамоты", menu: "Достижения" },
-    { id: "experience", dom: "experience", title: "Опыт работы", menu: "Опыт" },
-    { id: "education", dom: "education", title: "Образование", menu: "" },
-    { id: "approach", dom: "approach", title: "Подход и качества", menu: "Подход" },
-    { id: "gallery", dom: "gallery", title: "Фотогалерея", menu: "" },
-    { id: "contacts", dom: "contacts", title: "Контакты", menu: "Контакты" }
+    { id: "stats", dom: "statsBand", title: "Цифры", menu: "", tone: "ink" },
+    { id: "about", dom: "about", title: "Обо мне", menu: "Обо мне", tone: "cream" },
+    { id: "achievements", dom: "achievements", title: "Достижения и грамоты", menu: "Достижения", tone: "sky" },
+    { id: "experience", dom: "experience", title: "Опыт работы", menu: "Опыт", tone: "cream" },
+    { id: "education", dom: "education", title: "Образование", menu: "", tone: "sand" },
+    { id: "approach", dom: "approach", title: "Подход и качества", menu: "Подход", tone: "cream" },
+    { id: "gallery", dom: "gallery", title: "Фотогалерея", menu: "", tone: "pink" },
+    { id: "contacts", dom: "contacts", title: "Контакты", menu: "Контакты", tone: "cream" }
   ];
+  // Цвета, из которых можно выбирать фон любого блока
+  const TONES = [
+    { id: "cream", name: "Кремовый", hex: "#FBF5EC" },
+    { id: "white", name: "Белый", hex: "#FFFCF7" },
+    { id: "sky", name: "Голубой", hex: "#DCEDF8" },
+    { id: "pink", name: "Светло-розовый", hex: "#FBE3E6" },
+    { id: "rose", name: "Розовый", hex: "#F2B8C0" },
+    { id: "sand", name: "Бежевый", hex: "#EBD9BF" },
+    { id: "blue", name: "Синий", hex: "#2C5F8E" },
+    { id: "ink", name: "Тёмно-синий", hex: "#1E2B44" }
+  ];
+  const toneOk = (t) => TONES.some((x) => x.id === t);
+  const tone = (value, def) => (toneOk(value) ? value : def);
   const defaultLayout = () => BLOCKS.map((b) => ({ block: b.id, hidden: false, menu: b.menu }));
   const getLayout = (d) => (d && Array.isArray(d.layout) ? d.layout : defaultLayout());
 
-  window.Common = { cfg, esc, safeUrl, isConfigured, loadContent, loadDefault, icon, CATEGORIES, tgLink, vkLink, normPos, frameStyle, BLOCKS, defaultLayout, getLayout };
+  window.Common = { cfg, esc, safeUrl, isConfigured, loadContent, loadDefault, icon, CATEGORIES, tgLink, vkLink, normPos, frameStyle, BLOCKS, defaultLayout, getLayout, TONES, tone };
 })();

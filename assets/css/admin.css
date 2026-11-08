@@ -156,3 +156,13 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--g
 .restore { width: auto; padding: 9px 12px; border-radius: 999px; font-size: 14px; }
 .banner--update { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; background: #E4F2E9; }
 .banner__btns { display: flex; gap: 8px; }
+
+/* Выбор цвета блока */
+.tones { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.tone { width: 34px; height: 34px; border-radius: 50%; background: var(--c); border: 1px solid rgba(35,50,74,.25); cursor: pointer; padding: 0; position: relative; transition: transform .15s; }
+.tone:hover { transform: scale(1.08); }
+.tone.is-on { outline: 3px solid var(--gold); outline-offset: 2px; }
+.tone.is-on::after { content: "✓"; position: absolute; inset: 0; display: grid; place-items: center; font-weight: 800; font-size: 15px; color: #1E2B44; }
+.tone[data-v="ink"].is-on::after, .tone[data-v="blue"].is-on::after { color: #fff; }
+.tones__name { font-size: 13.5px; color: var(--muted); margin-left: 4px; }
+.panel--tone { padding: 16px 22px; }

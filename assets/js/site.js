@@ -1,6 +1,6 @@
 /* Рендер публичного сайта из содержимого (Supabase или content/default.json) */
 (function () {
-  const { esc, safeUrl, icon, CATEGORIES, tgLink, vkLink, loadContent, frameStyle, BLOCKS, getLayout } = window.Common;
+  const { esc, safeUrl, icon, CATEGORIES, tgLink, vkLink, loadContent, frameStyle, BLOCKS, getLayout, TONES, tone } = window.Common;
   const $ = (s) => document.querySelector(s);
   const arr = (v) => (Array.isArray(v) ? v : []);
   const plural = (n, a, b, c) => { const m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : m >= 2 && m <= 4 && (h < 10 || h >= 20) ? b : c; };
@@ -34,6 +34,8 @@
     $("#ctaPrimary").innerHTML = esc(h.cta_primary || "Связаться") + icon("arrow");
     $("#ctaSecondary").textContent = h.cta_secondary || "Достижения";
 
+    const panel = TONES.find((x) => x.id === h.panel_bg);
+    if (panel) $("#top").style.setProperty("--hero-panel", panel.hex); else $("#top").style.removeProperty("--hero-panel");
     const initials = ((parts[0] || "")[0] || "") + ((parts[parts.length - 1] || "")[0] || "");
     const photo = safeUrl(h.photo);
     $("#portrait").innerHTML = photo
@@ -64,20 +66,20 @@
       : `<a class="hcard__more" href="#contacts">Все контакты ${icon("arrow")}</a>`;
 
     $("#headerCards").innerHTML = `
-      <article class="hcard hcard--awards reveal">
+      <article class="hcard hcard--awards reveal" data-tone="${tone(hc.awards_bg, "pink")}">
         <div class="hcard__icon">${icon("award")}</div>
         <h3>${esc(hc.awards_title || "Грамоты и награды")}</h3>
         <div class="hcard__count"><b>${awards.length}</b><span>${plural(awards.length, "достижение", "достижения", "достижений")} в портфолио</span></div>
         <p>${esc(hc.awards_text || "")}</p>
         <a class="hcard__more" href="#achievements">Смотреть грамоты ${icon("arrow")}</a>
       </article>
-      <article class="hcard hcard--teaching reveal" style="--d:.08s">
+      <article class="hcard hcard--teaching reveal" style="--d:.08s" data-tone="${tone(hc.teaching_bg, "sand")}">
         <div class="hcard__icon">${icon("users")}</div>
         <h3>${esc(hc.teaching_title || "Педагогическая деятельность")}</h3>
         <p>${esc(hc.teaching_text || "")}</p>
         <a class="hcard__more" href="#experience">Подробнее об опыте ${icon("arrow")}</a>
       </article>
-      <article class="hcard hcard--contact reveal" style="--d:.16s">
+      <article class="hcard hcard--contact reveal" style="--d:.16s" data-tone="${tone(hc.contact_bg, "ink")}">
         <div class="hcard__icon">${icon("chat")}</div>
         <h3>${esc(hc.contact_title || "Контакты")}</h3>
         <p>${esc(hc.contact_text || "")}</p>
@@ -100,6 +102,8 @@
     $("#aboutTitle").textContent = a.title || "";
     $("#aboutText").innerHTML = arr(a.paragraphs).filter(has).map((p) => `<p>${esc(p)}</p>`).join("");
     const q = $("#aboutQuote"); q.hidden = !has(a.quote); q.textContent = a.quote || "";
+    q.dataset.tone = tone(a.quote_bg, "rose");
+    $(".why").dataset.tone = tone(a.why_bg, "sky");
     $("#whyTitle").textContent = a.why_title || "";
     $("#whyList").innerHTML = arr(a.why).filter(has).map((w) => `<li>${icon("check")}<span>${esc(w)}</span></li>`).join("");
     $(".why").hidden = !arr(a.why).filter(has).length;
@@ -115,7 +119,7 @@
       ? `<button class="ach__media" type="button" data-lb="${esc(img)}" data-cap="${esc(a.title)}" aria-label="Открыть изображение: ${esc(a.title)}"><img src="${esc(img)}" alt="${esc(a.title)}" loading="lazy" style="${frameStyle(a.image_pos)}"></button>`
       : `<div class="ach__art" aria-hidden="true"></div>`;
     return `
-      <article class="ach cat-${cat} ${a.featured ? "ach--featured" : ""} reveal" style="--d:${(i % 3) * 0.07}s" data-cat="${cat}">
+      <article class="ach cat-${cat} ${a.featured ? "ach--featured" : ""} reveal" data-tone="white" style="--d:${(i % 3) * 0.07}s" data-cat="${cat}">
         <div class="ach__top">${media}</div>
         <div class="ach__body">
           <div class="ach__meta"><span class="ach__cat">${esc(CATEGORIES[cat])}</span>${has(a.year) ? `<span class="ach__year">${esc(a.year)}</span>` : ""}${a.featured ? '<span class="ach__star">Главное</span>' : ""}</div>
@@ -157,7 +161,7 @@
   function renderEducation(d) {
     const list = arr(d.education).filter((e) => has(e.institution));
     $("#edu").innerHTML = list.map((e, i) => `
-      <article class="edu__item reveal" style="--d:${i * 0.08}s">
+      <article class="edu__item reveal" style="--d:${i * 0.08}s" data-tone="white">
         <div class="edu__icon">${icon("school")}</div>
         <div>
           ${has(e.period) ? `<div class="edu__period">${esc(e.period)}</div>` : ""}
@@ -171,7 +175,7 @@
 
   function renderApproach(d) {
     $("#compGrid").innerHTML = arr(d.competencies).filter((c) => has(c.title)).map((c, i) => `
-      <article class="comp reveal" style="--d:${i * 0.08}s">
+      <article class="comp reveal" style="--d:${i * 0.08}s" data-tone="${tone(c.bg, ["sky", "pink", "sand"][i % 3])}">
         <div class="comp__icon">${icon(c.icon || "spark")}</div>
         <h3>${esc(c.title)}</h3>
         <ul>${arr(c.items).filter(has).map((x) => `<li>${icon("check")}<span>${esc(x)}</span></li>`).join("")}</ul>
@@ -196,6 +200,7 @@
   function renderContacts(d) {
     const c = d.contacts || {};
     $("#contactNote").textContent = c.note || "";
+    $("#contactCard").dataset.tone = tone(c.card_bg, "ink");
     const items = contactItems(c);
     if (has(c.city)) items.push({ key: "city", label: "Город", value: c.city, icon: "map" });
     const html = items.map((it) => {
@@ -213,7 +218,6 @@
   }
 
   /* ---------- Блоки страницы ---------- */
-  const BG = { cream: "", sky: "section--sky", pink: "section--pink", sand: "section--sand", ink: "section--ink" };
   function buildCustom(it, i) {
     const key = String(it.key || "c" + i).replace(/[^\w-]/g, "");
     const img = safeUrl(it.image);
@@ -221,7 +225,8 @@
     const pts = arr(it.points).filter(has);
     const link = safeUrl(it.link);
     const sec = document.createElement("section");
-    sec.className = "section cblock-section " + (BG[it.bg] || "");
+    sec.className = "section cblock-section";
+    sec.dataset.tone = tone(it.bg, "cream");
     sec.id = "b-" + key;
     sec.innerHTML = `
       <div class="container cblock ${img ? "cblock--img" : ""} ${it.image_side === "left" ? "cblock--left" : ""}">
@@ -252,6 +257,7 @@
         const b = BLOCKS.find((x) => x.id === it.block);
         node = b && document.getElementById(b.dom);
         if (!node) return;
+        node.dataset.tone = tone(it.bg, b.tone);
       }
       if (it.hidden) node.dataset.off = "1"; else delete node.dataset.off;
       anchor.after(node); anchor = node;
